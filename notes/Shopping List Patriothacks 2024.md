@@ -1,0 +1,3 @@
+- Pump (probably from grainger) 12v or 120v
+- Possibly a car battery to power it (if necessary)
+- 
