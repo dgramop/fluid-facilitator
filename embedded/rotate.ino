@@ -2,19 +2,19 @@
 #define STEP_AZIMUTH 2
 // "DIRECTION" pin for AZIMUTH
 #define DIR_AZIMUTH 3
-#define LIMIT_AZIMUTH 80
+#define LIMIT_AZIMUTH 100
 
 // "STEP" pin for AZIMUTH
 #define STEP_ELEVATION 5
 // "DIRECTION" pin for AZIMUTH
 #define DIR_ELEVATION 6
-#define LIMIT_ELEVATION 80
+#define LIMIT_ELEVATION 60
 
 // PUMP relay, active high, pump on "normally open (NO) PIN"
 #define PUMP_DRILL 8 
 
-int az_steps = 40;
-int el_steps = 40;
+int az_steps = 50;
+int el_steps = 30;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -58,9 +58,9 @@ void step(char dir, unsigned int steps) {
     case 'D':
       step_pin = STEP_ELEVATION;
       digitalWrite(DIR_ELEVATION, HIGH);
-      if(steps + el_steps >= LIMIT_AZIMUTH) {
+      if(steps + el_steps >= LIMIT_ELEVATION) {
         steps = LIMIT_AZIMUTH - el_steps;
-        el_steps = LIMIT_AZIMUTH;
+        el_steps = LIMIT_ELEVATION;
         saturated = true;
       } else {
         el_steps += steps;
@@ -104,6 +104,12 @@ void loop() {
     char cmd = '\0';
     cmd = Serial.read();
 
+    if(cmd == 'H') {
+      az_steps = 50;
+      el_steps = 30;
+      Serial.read();
+      return;
+    }
     if(cmd == 'P') {
       unsigned int pump_ms = read_int();
       if(pump_ms > 10000) {
