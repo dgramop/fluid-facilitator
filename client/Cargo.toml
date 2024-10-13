@@ -4,4 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+deku = "0.18.1"
 serialport = "4.5.1"

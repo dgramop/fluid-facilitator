@@ -86,20 +86,17 @@ void step(char dir, unsigned int steps) {
     steps--;
   }
   if(saturated) {
-    Serial.println("OK");
+    Serial.println("Y");
   } else {
-    Serial.println("LIMIT");
+    Serial.println("L");
   }
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  if(Serial.available() >= 5) {
-    Serial.write("available");
+  if(Serial.available() >= 6) {
     char cmd = '\0';
     cmd = Serial.read();
-
-    Serial.write(cmd);
 
     switch(cmd) {
       case 'R':
@@ -110,6 +107,7 @@ void loop() {
       step(cmd, steps);
       break;
     }
+    Serial.read();
   }
 }
 
