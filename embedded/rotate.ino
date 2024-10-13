@@ -11,7 +11,7 @@
 #define LIMIT_ELEVATION 80
 
 // PUMP relay, active high, pump on "normally open (NO) PIN"
-#define PUMP_DRILL 8
+#define PUMP_DRILL 8 
 
 int az_steps = 40;
 int el_steps = 40;
@@ -26,6 +26,7 @@ void setup() {
   pinMode(PUMP_DRILL, OUTPUT);
 
   Serial.begin(9600);
+  Serial.println("OK");
 }
 
 void step(char dir, unsigned int steps) {
@@ -92,22 +93,45 @@ void step(char dir, unsigned int steps) {
   }
 }
 
+unsigned int read_int() {
+  return ((unsigned int) Serial.read()) << 24 | ((unsigned int) Serial.read()) << 16 | ((unsigned int) Serial.read()) << 8 | ((unsigned int) Serial.read());
+}
+
 // the loop function runs over and over again forever
 void loop() {
-  if(Serial.available() >= 6) {
+  int avail = Serial.available();
+  if(avail >= 6) {
     char cmd = '\0';
     cmd = Serial.read();
 
+    if(cmd == 'P') {
+      unsigned int pump_ms = read_int();
+      if(pump_ms > 10000) {
+        pump_ms = 10000;
+      }
+      digitalWrite(PUMP_DRILL, HIGH);
+      delay(pump_ms);
+      digitalWrite(PUMP_DRILL, LOW);
+      Serial.println("Y");
+      Serial.read();
+      return;
+    }
     switch(cmd) {
       case 'R':
       case 'L':
       case 'U':
       case 'D':
-      unsigned int steps = ((unsigned int) Serial.read()) << 24 | ((unsigned int) Serial.read()) << 16 | ((unsigned int) Serial.read()) << 8 | ((unsigned int) Serial.read());
+      unsigned int steps = read_int();
       step(cmd, steps);
       break;
+      default:
+      Serial.println("UNKNOWN COMMAND");
+      break;
     }
+
+    // slurps newlines
     Serial.read();
   }
+  delay(500);
 }
 
