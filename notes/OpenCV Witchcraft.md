@@ -10,6 +10,7 @@ The camera will rotate left and right but stay at a fixed vertical angle
 - [OpenCV ArUco Marker Detection Functions](https://docs.opencv.org/3.4/d9/d6a/group__aruco.html)
 - [Perspective-n-Point (PnP) pose computation](https://docs.opencv.org/4.x/d5/d1f/calib3d_solvePnP.html)
 	- This is NOT related to ArUco markers, but may be useful
+- [OpenCV Camera Calibration Tutorial](https://aliyasineser.medium.com/opencv-camera-calibration-e9a48bdd1844)
 
 ### Basic ArUco detection
 
