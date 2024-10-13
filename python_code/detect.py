@@ -1,8 +1,15 @@
 import cv2
+import serial
+import struct
+
+port = 'COM6'
+baudrate = 9600
+
+srl = serial.Serial(port, baudrate)
 
 w = 640
 l = 480
-deadzone = 5
+deadzone = 30
 
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
 aruco_params = cv2.aruco.DetectorParameters()
@@ -10,6 +17,16 @@ aruco_params = cv2.aruco.DetectorParameters()
 aruco_detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
 
 capture = cv2.VideoCapture(1)
+
+def move_one(direction):
+    data = struct.pack('>cIc', bytes(direction, 'ASCII'), 1, b"\n")
+    srl.write(data)
+    res = srl.read().decode("ASCII")
+    if res == 'L':
+        print('Limit Reached')
+    else:
+        print('Fine')
+
 
 while True:
     # read() returns false for ret if a frame cant be captured for some reason
@@ -36,11 +53,12 @@ while True:
 
     if corners and center!=0:
         if (width/2 - deadzone) < center < (width/2 + deadzone):
-            print("DEADZONE")
+            pass
+            # print("DEADZONE")
         elif int(center) < w/2:
-            print("left")
+            move_one('L')
         else:
-            print("right")
+            move_one('R')
 
     # Show the result
     cv2.imshow('frame', frame)
