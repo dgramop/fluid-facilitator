@@ -59,7 +59,7 @@ void step(char dir, unsigned int steps) {
       step_pin = STEP_ELEVATION;
       digitalWrite(DIR_ELEVATION, HIGH);
       if(steps + el_steps >= LIMIT_ELEVATION) {
-        steps = LIMIT_AZIMUTH - el_steps;
+        steps = LIMIT_ELEVATION - el_steps;
         el_steps = LIMIT_ELEVATION;
         saturated = true;
       } else {
