@@ -5,11 +5,15 @@ import struct
 port = 'COM6'
 baudrate = 9600
 
-srl = serial.Serial(port, baudrate)
+srl = serial.Serial(port, baudrate, timeout=5)
+srl.read(2)
+srl.reset_input_buffer()
 
 w = 640
 l = 480
 deadzone = 30
+
+countdown = 0
 
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
 aruco_params = cv2.aruco.DetectorParameters()
@@ -22,10 +26,15 @@ def move_one(direction):
     data = struct.pack('>cIc', bytes(direction, 'ASCII'), 1, b"\n")
     srl.write(data)
     res = srl.read().decode("ASCII")
-    if res == 'L':
-        print('Limit Reached')
-    else:
-        print('Fine')
+    # if res == 'L':
+    #     print('Limit Reached')
+    # else:
+    #     print('Fine')
+
+def spray(seconds):
+    data = struct.pack('>cIc', b('P'), seconds * 1000, b"\n")
+    srl.write(data)
+    srl.read().decode('ASCII')
 
 
 while True:
@@ -53,24 +62,25 @@ while True:
 
     if corners and center!=0:
         if (width/2 - deadzone) < center < (width/2 + deadzone):
-            pass
+            countdown += 1
             # print("DEADZONE")
         elif int(center) < w/2:
             move_one('L')
+            countdown = 0
+            print('l')
         else:
             move_one('R')
+            countdown = 0
+            print('r')
+
+    if countdown == 150:
+        print('spray')
+        spray(2)
 
     # Show the result
     cv2.imshow('frame', frame)
 
-    #if corners and corners[0] < w:
-        #print("left")
-    #else:
-        #print("right")
-
     x, y, width, height = cv2.getWindowImageRect("frame")
-
-    #cv2.line(frame, x, y, (255, 0, 0), 3)
 
     # Exit cleanly if you press q
     if cv2.waitKey(1) == ord('q'):
