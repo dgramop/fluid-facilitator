@@ -1,0 +1,6 @@
+- CV to detect red solo cup
+- PID loop
+- Store trip
+- Motor + controller + mcu/cpu wiring
+- Pump + relay + mcu wiring
+- Integration
